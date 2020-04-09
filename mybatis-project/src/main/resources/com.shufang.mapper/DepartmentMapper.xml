@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--指定映射接口的绑定,也就是明命名空间,而且命名空间不能为空-->
+<mapper namespace="com.shufang.mapper.DepartmentMapper">
+
+    <!-- Department getDeptById(String id); -->
+    <select id="getDeptById" resultType="Department">
+        select did ,dname from department where did = #{id}
+    </select>
+</mapper>

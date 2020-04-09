@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--指定映射接口的绑定-->
+<mapper namespace="com.shufang.mapper.UserMapper">
+
+    <!--绑定接口中的方法：selectBlog方法与SQL语句进行绑定-->
+    <!--在底层为我们创建的preparedstatement预编译对象
+     select * from user where id = ${value}  这里直接将param拼接到id，批量删除和模糊查询，只能用`$$$$$`-->
+    <select id="getById" resultType="com.shufang.pojo.User">
+    select id,name from user where id = #{id}
+    </select>
+
+    <insert id="insert">
+        insert into user(id ,name) values (#{id} ,#{name})
+    </insert>
+
+</mapper>

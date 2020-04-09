@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--指定映射接口的绑定,也就是明命名空间,而且命名空间不能为空-->
+<mapper namespace="com.shufang.mapper.EmpDeptMapper">
+
+    <!--自定义结果映射，多对一 方式一： -->
+    <!--        <resultMap id="empMap" type="Employee">-->
+    <!--            &lt;!&ndash;通过id来指定主键的映射&ndash;&gt;-->
+    <!--            <id column="empid" property="empId"/>-->
+    <!--            <result column="name" property="name"/>-->
+    <!--            <result column="gender" property="gender"/>-->
+    <!--            <result column="age" property="age"/>-->
+    <!--            <result column="deptid" property="dept.dId"/>-->
+    <!--            <result column="dname" property="dept.dName"/>-->
+    <!--        </resultMap>-->
+
+    <resultMap id="empMap" type="Employee">
+        <id column="empid" property="empId"/>
+        <result column="name" property="name"/>
+        <result column="gender" property="gender"/>
+        <result column="age" property="age"/>
+        <association property="dept" javaType="Department">
+            <id column="did" property="dId"/>
+            <result column="dname" property="dName"/>
+        </association>
+    </resultMap>
+
+    <!--/////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
+    <!--Employee getEmpById(String id);    -->
+    <resultMap id="empStepMap" type="Employee">
+        <id column="empid" property="empId"/>
+        <result column="name" property="name"/>
+        <result column="gender" property="gender"/>
+        <result column="age" property="age"/>
+        <association property="dept" select="com.shufang.mapper.DepartmentMapper.getDeptById" column="did">
+            <id column="did" property="dId"/>
+            <result column="dname" property="dName"/>
+        </association>
+    </resultMap>
+
+    <select id="getAllEmp" resultMap="empStepMap">
+    SELECT
+    e.empid,
+    e.name,
+    e.gender,
+    e.age,
+    d.did,
+    d.dname
+    FROM hr_emp e
+    LEFT JOIN department d
+    ON e.deptid = d.did
+    </select>
+
+
+    <!--/////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
+    <select id="getEmpById" resultMap="empStepMap">
+    select empid,name,gender,age,d.did,d.dname from hr_emp left join department d on hr_emp.deptid = d.did where empid = #{id}
+    </select>
+
+
+    <!-- Department getDeptEmpbyId(String id);   -->
+    <resultMap id="deptMap" type="Department">
+        <id column="did" property="dId"/>
+        <result column="dname" property="dName"/>
+        <!--  这里的ofType是不能改成javaType的-->
+        <collection property="employeeList" ofType="Employee">
+            <id column="empid" property="empId"/>
+            <result column="name" property="name"/>
+            <result column="gender" property="gender"/>
+            <result column="age" property="age"/>
+        </collection>
+    </resultMap>
+
+    <select id="getDeptEmpbyId" resultMap="deptMap">
+        select d.did ,d.dname ,e.empid ,e.name,e.gender ,e.age  from department d left join hr_emp e on d.did = e.deptid where did = #{id}
+    </select>
+
+    <!--/////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
+    <!--一对多分布查询-->
+
+    <!--    Department getOnlyDeptById(String id) 这是最终的标签,这里需要用到resultMap;-->
+    <select id="getOnlyDeptById" resultMap="deptEmpStep">
+        select did,dname from department where did = #{id}
+    </select>
+    <resultMap id="deptEmpStep" type="Department">
+        <id column="did" property="dId"/>
+        <result column="dname" property="dName"/>
+        <collection property="employeeList" select="getEmpsByDeptId" column="did = did" fetchType="lazy">
+            <!--            <id column="empid" property="empId"/>-->
+            <!--            <result column="name" property="name"/>-->
+            <!--            <result column="gender" property="gender"/>-->
+            <!--            <result column="age" property="age"/>-->
+        </collection>
+    </resultMap>
+
+    <!--    List<Employee> getEmpsByDeptId(String did) 这是被调用的标签;-->
+    <select id="getEmpsByDeptId" resultType="Employee">
+        select empid ,name ,gender ,age,deptid from hr_emp where deptid = #{did}
+    </select>
+
+
+</mapper>

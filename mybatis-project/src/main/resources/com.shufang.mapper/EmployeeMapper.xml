@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--指定映射接口的绑定,也就是明命名空间,而且命名空间不能为空-->
+<mapper namespace="com.shufang.mapper.EmployeeMapper">
+
+    <!--Employee getEmpById(String id);-->
+    <select id="getEmpById" resultType="Employee">
+        select empid,name,gender,age,deptid from hr_emp where empid = #{id}
+    </select>
+
+    <!--List<Employee> getEmployees();-->
+    <select id="getEmployees" resultType="Employee">
+        select empid,name,gender,age,deptid  from hr_emp
+    </select>
+
+    <!--Map<Integer,Object> getEmpMapById(String id);-->
+    <select id="getEmpMapById" resultType="java.util.HashMap">
+        select empid,name,gender,age,deptid from hr_emp where empid = #{id}
+    </select>
+
+
+    <!--Integer getcount();-->
+    <select id="getcount" resultType="Integer">
+        select count(1) from hr_emp
+    </select>
+
+
+    <!--void insertEmp(Employee employee); 默认返回受影响的行数-->
+    <!-- empId是当前映射对象Employee的属性-->
+    <insert id="insertEmp" useGeneratedKeys="true" keyProperty="empId">
+    insert into hr_emp values (null,#{name},#{gender},#{age},#{deptId})
+    </insert>
+
+    <!--void updateEmp(Employee employee);-->
+    <!--parameterType="Employee" 自动类型推断机制，一般情况下不用自己声明parameterType的类型-->
+    <update id="updateEmp">
+        update hr_emp set name = #{name} ,gender = #{gender},age = #{age} where empid = #{empId}
+    </update>
+
+    <!--void deleteEmp(String id);默认返回受影响的行数 或者boolean的值，看是否删除成功-->
+    <delete id="deleteEmp">
+        delete  from hr_emp where empid = #{id}
+    </delete>
+</mapper>

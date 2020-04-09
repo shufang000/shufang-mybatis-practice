@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>  <!--XML文件的标注必须在第一行，切记切记-->
+<!--configuration是根标签，所有的xml标签都必须包在configuration标签中-->
+<!--dtd代表我们可以在根标签中使用哪些标签-->
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<!--myabtis的所有标签是有顺序的，必须按照指定的顺序进行编写标签-->
+<configuration>
+
+    <!--    <properties>-->
+    <!--        <property name="jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>-->
+    <!--        <property name="jdbc.username" value="root"/>-->
+    <!--        <property name="jdbc.password" value="888888"/>-->
+    <!--        <property name="jdbc.url" value="jdbc:mysql://localhost:3306/hello"/>-->
+    <!--    </properties>-->
+
+    <!--设置或者引入用户资源文件-->
+    <!--resource：设置或者引入类路径下的用户资源文件-->
+    <!--url：设置或者引入网络路径下的、或者磁盘下的用户资源文件-->
+    <properties resource="jdbc.properties"></properties>
+
+    <!--进行一些mybatis的设置，可以在官网找到相应的配置，比如说将下划线转化成驼峰命名-->
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <!--开启分布查询的延迟加载-->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <setting name="aggressiveLazyLoading" value="false"/>
+    </settings>
+
+
+    <typeAliases>
+        <!--这里的别名起了之后是不区分大小写的-->
+        <typeAlias type="com.shufang.pojo.User" alias="User"></typeAlias>
+        <!--将指定包下的所有类都起上默认的-->
+        <package name="com.shufang.pojo"/>
+    </typeAliases>
+
+
+    <environments default="mysql">
+        <environment id="mysql">
+            <!--怎么设置自动提示呢，只需要在idea的xml-catalog中设置一下s
+            http://mybatis.org/dtd/mybatis-3-config.dtd就可以了-->
+            <!--transactionManager type="JDBC|MANAGED" JDBC:提交、回滚都需要手动处理-->
+            <transactionManager type="JDBC"/>
+            <!-- <dataSource type="POOLED|UNPOOLED不使用数据源|JDNI调用上下文中的数据源">-->
+            <dataSource type="POOLED">
+                <!--添加数据库的连接信息-->
+                <property name="driver" value="${jdbc.driver}"/>
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
+            </dataSource>
+        </environment>
+
+        <environment id="oracle">
+            <!--怎么设置自动提示呢，只需要在idea的xml-catalog中设置一下s
+            http://mybatis.org/dtd/mybatis-3-config.dtd就可以了-->
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <!--添加数据库的连接信息-->
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <property name="url" value="jdbc:oracle://localhost:3306/hello"/>
+                <property name="username" value="root"/>
+                <property name="password" value="888888"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+
+    <!--要求Mapper 接口与 Mapper.xml文件必须在同一个包下，至少得编译之后包名相同-->
+    <!-- <package name="com.shufang.mapper"/>-->
+
+    <!--指定映射对应的xml文件，可以指定多个-->
+
+    <mappers>
+        <mapper resource="com.shufang.mapper/UserMapper.xml"/>
+        <mapper resource="com.shufang.mapper/EmployeeMapper.xml"/>
+        <mapper resource="com.shufang.mapper/EmployeeSelectMapper.xml"/>
+        <mapper resource="com.shufang.mapper/ParamMapper.xml"/>
+        <mapper resource="com.shufang.mapper/EmpDeptMapper.xml"/>
+        <mapper resource="com.shufang.mapper/DepartmentMapper.xml"/>
+    </mappers>
+
+
+</configuration>

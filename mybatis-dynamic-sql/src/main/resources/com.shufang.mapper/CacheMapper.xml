@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--指定映射接口的绑定,也就是明命名空间,而且命名空间不能为空-->
+<mapper namespace="com.shufang.mapper.CacheMapper">
+    <!--  开启当前Mapper的缓存  -->
+    <cache size="1024" eviction="FIFO"/>
+
+    <!--    Employee getEmpById(String id);-->
+
+
+    <resultMap id="empDeptMap" type="Employee">
+        <id column="empid" property="empId"/>
+        <result column="name" property="name"/>
+        <result column="gender" property="gender"/>
+        <result column="age" property="age"/>
+
+        <association property="dept" javaType="Department">
+            <id column="did" property="dId"/>
+            <result column="dname" property="dName"/>
+        </association>
+    </resultMap>
+
+    <select id="getEmpById" resultMap="empDeptMap" flushCache="false">
+        select empid ,name ,gender ,age ,deptid,d.did,d.dname from hr_emp e
+        left join department d
+        on e.deptid  = d.did
+        where empid = #{id}
+    </select>
+
+    <!--    List<Employee> getAllEmps();-->
+    <select id="getAllEmps" resultMap="empDeptMap" useCache="true" flushCache="false">
+        select empid ,name ,gender ,age ,deptid,d.did,d.dname from hr_emp e
+        left join department d
+        on e.deptid  = d.did
+    </select>
+</mapper>

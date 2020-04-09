@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--指定映射接口的绑定,也就是明命名空间,而且命名空间不能为空-->
+<mapper namespace="com.shufang.mapper.EmployeeMapper">
+
+    <cache eviction="FIFO" size="512" readOnly="true" />
+    <!-- public List<Employee> getEmpsByMultiFeature(Emmployee emp);   -->
+    <!--    <select id="getEmpsByMultiFeature" resultType="Employee">-->
+    <!--        select empid,name,gender,age,deptid-->
+    <!--        from hr_emp-->
+    <!--        where 1 = 1-->
+    <!--        <if test="empId != null"> and empid = #{empId}</if>-->
+    <!--        <if test="name != null and name != ''"> and name = #{name} </if>-->
+    <!--        <if test="gender == 1 or gender == 2">and gender = #{gender} </if>-->
+    <!--        <if test="age != null and age &lt; 100"> and age = #{age} </if>-->
+    <!--    </select>-->
+
+
+    <!-- public List<Employee> getEmpsByMultiFeature(Emmployee emp);   -->
+    <!--    <select id="getEmpsByMultiFeature" resultType="Employee">-->
+    <!--        select empid,name,gender,age,deptid-->
+    <!--        from hr_emp-->
+    <!--        <where>-->
+    <!--        <if test="empId != null"> empid = #{empId}</if>-->
+    <!--        <if test="name != null and name != ''"> and name = #{name} </if>-->
+    <!--        <if test="gender == 1 or gender == 2">and gender = #{gender} </if>-->
+    <!--        <if test="age != null and age &lt; 100"> and age = #{age} </if>-->
+    <!--        </where>-->
+    <!--    </select>-->
+
+    <!--  定一个一个公用的SQL模块，可以让其他标签通过<include>进行引用  -->
+    <sql id="empColumns"> select empid,name,gender,age,deptid from hr_emp</sql>
+
+    <select id="getEmpsByMultiFeature" resultType="Employee">
+        <include refid="empColumns"/>
+        <trim prefix="where" suffixOverrides="and|or">
+            <if test="empId != null">empid = #{empId} and</if>
+            <if test="name != null and name != ''">name = #{name} and</if>
+            <if test="gender == 1 or gender == 2">gender = #{gender} or</if>
+            <if test="age != null and age &lt;= 100">age = #{age}</if>
+        </trim>
+    </select>
+
+
+    <!-- public List<Employee> getEmpsByOneFeature(Employee emp);   -->
+    <select id="getEmpsByOneFeature" resultType="Employee">
+        select empid,name,gender,age,deptid
+        from hr_emp
+        <where>
+            <choose>
+                <when test="empId != null">
+                    empid = #{empId}
+                </when>
+                <when test="name != null and name != ''">
+                    name = #{name}
+                </when>
+                <when test="gender == 1 or gender == 2">
+                    gender = #{gender}
+                </when>
+                <otherwise>
+                    age = #{age}
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+    <!--  void deleteBatch(String ids);  批量删除～～ -->
+    <delete id="deleteBatch">
+        delete from hr_emp where empid in (${ids})
+    </delete>
+
+
+    <!-- void insertEmp(Employee emp);   -->
+    <insert id="insertEmp">
+        insert into hr_emp(name,gender,age) values(
+        <trim suffixOverrides=",">
+            <choose>
+                <when test="name == '哇哈哈' and name != null">
+                    'wahaha',
+                </when>
+                <otherwise>
+                    #{name},
+                </otherwise>
+            </choose>
+            #{gender},
+            #{age},
+        </trim>
+        )
+    </insert>
+
+    <!--    void deleteMoreByList(List<String> ids);-->
+    <delete id="deleteMoreByList">
+        delete from hr_emp where empid in
+        <foreach collection="ids" separator="," item="empid" open="(" close=")">
+            #{empid}
+        </foreach>
+
+    </delete>
+
+
+    <!--    void deleteByOr(@Param("ids") List<String> ids);-->
+    <delete id="deleteByOr">
+        delete from hr_emp
+        <where>
+            <foreach collection="ids" item="empid" separator="or">
+                empid = #{empid}
+            </foreach>
+        </where>
+
+    </delete>
+
+
+    <!-- void insertBatch(List<Employee> emps);   -->
+    <insert id="insertBatch">
+        insert into hr_emp(name,gender,age) values
+        <foreach collection="list" item="emp" separator=",">
+            (#{emp.name},#{emp.gender},${emp.age})
+        </foreach>
+    </insert>
+
+    <!-- void updateBatch(@Param("emps) Employee[] emps);   -->
+    <update id="updateBatch">
+        <foreach collection="emps" item="emp">
+            update hr_emp set name = #{emp.name} ,gender = #{emp.gender} ,age = #{emp.age}
+            where empid = #{emp.empId};
+        </foreach>
+    </update>
+
+
+    <!--  Employee getEmpByEmpId(String id);  -->
+
+    <resultMap id="empDeptMap1" type="Employee">
+
+        <id column="empid" property="empId"/>
+        <result column="name" property="name"/>
+        <result column="name" property="name"/>
+        <result column="name" property="name"/>
+
+        <association property="dept" javaType="Department">
+            <id column="did" property="dId"/>
+            <result column="dname" property="dName"/>
+        </association>
+    </resultMap>
+
+    <select id="getEmpByEmpId" resultMap="empDeptMap1" useCache="false">
+        select empid ,name ,gender ,age ,d.did,d.dname
+        from hr_emp  e
+        left join department d
+        on e.deptid = d.did
+        where empid = #{id}
+    </select>
+</mapper>

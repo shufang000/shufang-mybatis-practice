@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.shufang.mapper.EmployeeSelectMapper">
+
+    <select id="getById" resultType="com.shufang.pojo.Employee">
+        select empid,name,gender,age,deptid from hr_emp where empid = #{id}
+    </select>
+
+
+    <select id="getCount" resultType="Integer">
+        select count(1) from hr_emp
+    </select>
+
+
+    <select id="getEmpMapById" resultType="java.util.HashMap">
+        select empid,name,gender,age,deptid from hr_emp where empid = #{id}
+    </select>
+
+</mapper>

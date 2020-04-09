@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.shufang.mapper.ParamMapper">
+<!--    Employee getEmpById(String id);-->
+<!--    &#45;&#45;         select empid ,name ,gender,age ,deptid  from hr_emp where empid = #{id}-->
+<!--    &#45;&#45;         select empid ,name ,gender,age ,deptid  from hr_emp where empid = '${_parameter}'-->
+    <select id="getEmpById" resultType="Employee">
+        select empid ,name ,gender,age ,deptid  from hr_emp where empid = '${value}'
+    </select>
+
+<!--    Employee getEmpByIdAndName(String id,String name);-->
+<!--    select empid ,name ,gender ,age deptid from hr_emp where empid = #{id} and name = #{name}-->
+<!--    select empid ,name ,gender ,age deptid from hr_emp where empid = #{param1} and name = #{param2}-->
+    <select id="getEmpByIdAndName" resultType="Employee">
+        select empid ,name ,gender ,age deptid from hr_emp where empid = ${arg0} and name = '${arg1}'
+    </select>
+
+
+    <select id="getEmpByMap" resultType="Employee">
+        select empid ,name ,gender ,age deptid from hr_emp where empid = ${id} and name = '${name}'
+    </select>
+
+<!--    Employee getEmpByIdAndNameParam(@Param("id")String id, @Param("name") String name);-->
+    <select id="getEmpByIdAndNameParam" resultType="Employee">
+        select * from hr_emp where empid = #{id} and  name = #{name}
+    </select>
+</mapper>
